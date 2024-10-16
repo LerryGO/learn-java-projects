@@ -1,4 +1,4 @@
-package br.com.lapdev.med.voll.api.paciente;
+package br.com.lapdev.med.voll.api.domain.paciente;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

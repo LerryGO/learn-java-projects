@@ -1,4 +1,4 @@
-package br.com.lapdev.med.voll.api.medico;
+package br.com.lapdev.med.voll.api.domain.medico;
 
 public record DadosListagemMedico(
         Long id,

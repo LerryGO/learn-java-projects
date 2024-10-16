@@ -1,6 +1,6 @@
 package br.com.lapdev.med.voll.api.controller;
 
-import br.com.lapdev.med.voll.api.medico.*;
+import br.com.lapdev.med.voll.api.domain.medico.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
