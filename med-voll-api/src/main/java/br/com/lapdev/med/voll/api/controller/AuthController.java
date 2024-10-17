@@ -2,6 +2,7 @@ package br.com.lapdev.med.voll.api.controller;
 
 import br.com.lapdev.med.voll.api.domain.usuario.DadosAutenticacao;
 import br.com.lapdev.med.voll.api.domain.usuario.Usuario;
+import br.com.lapdev.med.voll.api.infra.security.DataTokenJWT;
 import br.com.lapdev.med.voll.api.infra.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,10 @@ public class AuthController {
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid DadosAutenticacao dados){
-        var token = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
-        var authentication = manager.authenticate(token);
+        var authToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+        var authentication = manager.authenticate(authToken);
 
-        return ResponseEntity.ok(tokenService.createToken((Usuario) authentication.getPrincipal()));
+        var tokenJWT = tokenService.createToken((Usuario) authentication.getPrincipal());
+        return ResponseEntity.ok(new DataTokenJWT(tokenJWT));
     }
 }
