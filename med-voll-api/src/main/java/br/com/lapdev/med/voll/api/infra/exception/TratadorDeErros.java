@@ -1,5 +1,6 @@
 package br.com.lapdev.med.voll.api.infra.exception;
 
+import br.com.lapdev.med.voll.api.domain.VerificationException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,5 +57,10 @@ public class TratadorDeErros {
         public DadosErroValidacao(FieldError erro) {
             this(erro.getField(), erro.getDefaultMessage());
         }
+    }
+
+    @ExceptionHandler(VerificationException.class)
+    public ResponseEntity tratarErroRegraDeNegocio(VerificationException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

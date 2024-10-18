@@ -1,7 +1,8 @@
 package br.com.lapdev.med.voll.api.domain.consulta;
 
 import br.com.lapdev.med.voll.api.domain.VerificationException;
-import br.com.lapdev.med.voll.api.domain.consulta.validacoes.ValidadorAgendamentoDeConsulta;
+import br.com.lapdev.med.voll.api.domain.consulta.validacoes.agendamento.ValidadorAgendamentoDeConsulta;
+import br.com.lapdev.med.voll.api.domain.consulta.validacoes.cancelamento.ValidadorCancelamentoDeConsulta;
 import br.com.lapdev.med.voll.api.domain.medico.Medico;
 import br.com.lapdev.med.voll.api.domain.medico.MedicoRepository;
 import br.com.lapdev.med.voll.api.domain.paciente.PacienteRepository;
@@ -25,7 +26,10 @@ public class AgendaDeColsultas {
     @Autowired
     private List<ValidadorAgendamentoDeConsulta> validadores;
 
-    public void agendar(DadosAgendamentoConsulta dados) {
+    @Autowired
+    private List<ValidadorCancelamentoDeConsulta> validadoresCancelamento;
+
+    public DadosDetalhamentoConsulta agendar(DadosAgendamentoConsulta dados) {
         if (!pacienteRepository.existsById(dados.idPaciente())) {
             throw new VerificationException("Id do paciente informado não existe");
         }
@@ -37,10 +41,15 @@ public class AgendaDeColsultas {
         validadores.forEach(v -> v.validar(dados));
 
         var medico = escolherMedico(dados);
+        if(medico == null){
+            throw new VerificationException("Não existe médico disponível nessa data.");
+        }
         var paciente = pacienteRepository.getReferenceById(dados.idPaciente());
 
         var consulta = new Consulta(null, medico, paciente, dados.data(), null);
         consultaRepository.save(consulta);
+
+        return new DadosDetalhamentoConsulta(consulta);
     }
 
     private Medico escolherMedico(DadosAgendamentoConsulta dados) {
@@ -59,6 +68,8 @@ public class AgendaDeColsultas {
         if (!consultaRepository.existsById(dados.idConsulta())) {
             throw new VerificationException("Id da consulta informado não existe!");
         }
+
+        validadoresCancelamento.forEach(v -> v.validar(dados));
 
         var consulta = consultaRepository.getReferenceById(dados.idConsulta());
         consulta.cancelar(dados.motivo());
